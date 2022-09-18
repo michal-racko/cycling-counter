@@ -31,7 +31,7 @@ def load_data(data_file: Path, start_date: str) -> pd.DataFrame:
 def main():
     data = load_data(INPUT_FILE, START_DATE)
 
-    result = {'monthly_sums': {}}
+    result = {'monthly_sums': {}, 'yearly_sums': {}}
     for year, year_data in data.groupby(data.start_time.dt.year):
         monthly_sums = year_data.groupby(year_data.start_time.dt.month).sum()
 
@@ -39,6 +39,7 @@ def main():
             f'{year}-{str(month).zfill(2)}-01': distance
             for month, distance in monthly_sums.to_dict()['distance'].items()
         }
+        result['yearly_sums'][str(year)] = year_data['distance'].sum()
 
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(result, f)
